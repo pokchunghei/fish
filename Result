@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBTI 測試結果</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+    }
+    h1 {
+      text-align: center;
+    }
+    .bar {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .bar-label {
+      width: 50px;
+      text-align: left;
+    }
+    .bar-fill {
+      height: 30px;
+      border-radius: 5px;
+      margin-left: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    .analysis {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e7f3fe;
+      border-left: 6px solid #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MBTI 測試結果</h1>
+
+    <div id="results"></div>
+
+    <h2>分數表</h2>
+    <table>
+      <tr>
+        <th>功能</th>
+        <th>分數</th>
+      </tr>
+      <tr>
+        <td>Ne</td>
+        <td id="score-Ne"></td>
+      </tr>
+      <tr>
+        <td>Ni</td>
+        <td id="score-Ni"></td>
+      </tr>
+      <tr>
+        <td>Se</td>
+        <td id="score-Se"></td>
+      </tr>
+      <tr>
+        <td>Si</td>
+        <td id="score-Si"></td>
+      </tr>
+      <tr>
+        <td>Te</td>
+        <td id="score-Te"></td>
+      </tr>
+      <tr>
+        <td>Ti</td>
+        <td id="score-Ti"></td>
+      </tr>
+      <tr>
+        <td>Fe</td>
+        <td id="score-Fe"></td>
+      </tr>
+      <tr>
+        <td>Fi</td>
+        <td id="score-Fi"></td>
+      </tr>
+    </table>
+
+    <h2>功能排序</h2>
+    <p id="ranking"></p>
+
+    <div class="analysis" id="analysis">
+      <h3>性格分析</h3>
+      <p></p>
+    </div>
+  </div>
+
+  <script>
+    // 從 localStorage 獲取分數
+    const scores = JSON.parse(localStorage.getItem('mbtiScores')) || {
+      Ne: 0, Ni: 0, Se: 0, Si: 0, Te: 0, Ti: 0, Fe: 0, Fi: 0
+    };
+
+    const maxScore = 25; // 每個功能的最高分數
+
+    // 顯示分數和生成棒形圖
+    const resultsDiv = document.getElementById('results');
+    for (const [key, value] of Object.entries(scores)) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.innerHTML = `
+        <div class="bar-label">${key}</div>
+        <div class="bar-fill" style="width: ${value * 100 / maxScore}%; background-color: ${getColor(key)};">
+          ${value}
+        </div>
+      `;
+      resultsDiv.appendChild(bar);
+
+      // 填充表格
+      document.getElementById(`score-${key}`).innerText = value;
+    }
+
+    // 生成顏色
+    function getColor(key) {
+      const colors = {
+        Ne: '#FF5733',
+        Ni: '#33FF57',
+        Se: '#3357FF',
+        Si: '#FF33A1',
+        Te: '#FF9933',
+        Ti: '#33FFF6',
+        Fe: '#FF33D1',
+        Fi: '#FF33B5'
+      };
+      return colors[key];
+    }
+
+    // 計算排序
+    const ranking = Object.entries(scores).sort((a, b) => b[1] - a[1]).map(entry => entry[0]).join(' > ');
+    document.getElementById('ranking').innerText = ranking;
+
+    // 性格分析根據分數生成描述
+    const analysisText = generateAnalysis(scores);
+    document.getElementById('analysis').querySelector('p').innerText = analysisText;
+
+    // 根據分數生成性格分析
+    function generateAnalysis(scores) {
+      let analysis = '';
+      // 根據分數簡單生成分析，可根據需要進行調整
+      if (scores.Ne > scores.Si) {
+        analysis += '你是一個充滿創意和想像力的人，喜歡探索新的可能性。';
+      } else {
+        analysis += '你傾向於依賴過去的經驗來做決策，並在熟悉的環境中感到舒適。';
+      }
+      analysis += ' ';
+      if (scores.Te > scores.Fe) {
+        analysis += '你在工作中偏向於理性和邏輯，重視效率。';
+      } else {
+        analysis += '你在社交中更注重他人的感受，努力促進和諧。';
+      }
+      return analysis;
+    }
+  </script>
+</body>
+</html>
